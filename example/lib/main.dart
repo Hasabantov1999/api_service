@@ -65,13 +65,12 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
           children: [
             TextButton(
               onPressed: () async {
-                
                 ApiService api = ApiService();
                 var result = await api.requestApi(
-                    endPoint: 'https://reqres.in/api/users',
-                    requestType: ApiServiceRequestModel.Get,
-                    jsonBody: true);
-               
+                  endPoint: 'https://reqres.in/api/users',
+                  requestType: ApiServiceRequestModel.Get,
+                );
+
                 //if you set the token in manager
                 // await ApiServiceManager()
                 //     .setBearerToken(token: result['token']);

@@ -13,7 +13,7 @@ import 'package:logger/logger.dart';
 
 class ApiService<T extends ApiServiceModel> with ServiceLogger {
   bool clientIsActive = false;
-  late final T model;
+    T? model;
   Future<T?> requestApi(
       {Map<String, String>? params,
       bool? session = false,
@@ -247,7 +247,7 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
             }
           }
         }
-        return model.fromJson(json.decode(response.body));
+        return model!=null ? model!.fromJson(json.decode(response.body)): json.decode(response.body) ;
 
       case 401:
         if (statusCodeParams == null) {
