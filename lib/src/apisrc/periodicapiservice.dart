@@ -15,7 +15,7 @@ class PeriodicApiService with  PeriodicServiceModel {
 
   PeriodicApiService._internal();
 
-  Future<void> configurations({
+  Future<void> configurations<T extends ResponseModel>({
     required String taskId,
     Map<String, String>? params,
     bool? session = false,
@@ -25,6 +25,7 @@ class PeriodicApiService with  PeriodicServiceModel {
     Map<String, String>? headers,
     required ApiServiceRequestModel requestType,
     Map<int, Function(dynamic)>? statusCodeParams,
+    T? parseModel
   }) async {
     addAll(
       {
@@ -36,7 +37,8 @@ class PeriodicApiService with  PeriodicServiceModel {
           'jsonBody': jsonBody,
           'headers': headers,
           'requestType': requestType,
-          'statusCodeParams': statusCodeParams
+          'statusCodeParams': statusCodeParams,
+          'parseModel': parseModel
         },
       },
     );

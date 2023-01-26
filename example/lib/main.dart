@@ -66,7 +66,7 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
           children: [
             TextButton(
               onPressed: () async {
-                ApiService<EmptyRequest,Hyt> api = ApiService();
+                ApiService api = ApiService();
                 var result = await api.requestApi(
                   endPoint: 'https://reqres.in/api/users',
                   requestType: ApiServiceRequestModel.Get,
@@ -132,6 +132,7 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
               },
               child: const Text('Send Request'),
             ),
+        
           ],
         ),
       ),

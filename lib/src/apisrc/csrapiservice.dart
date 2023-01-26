@@ -11,17 +11,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class ApiService<E extends RequestModel, T extends ResponseModel> {
+class ApiService<E extends RequestModel,T extends ResponseModel> {
   bool clientIsActive = false;
-  T? model;
-  Future<T?> requestApi(
+
+  Future<dynamic> requestApi(
       {Map<String, String>? params,
       bool? session = false,
       required String endPoint,
+      T? parseModel,
       E? body,
       Map<String, String>? headers,
       required ApiServiceRequestModel requestType,
       Map<int, Function(dynamic)>? statusCodeParams}) async {
+   
     try {
       var client = http.Client();
       clientIsActive = true;
@@ -107,7 +109,10 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
       logger.d('Request Type:$requestType');
 
       return await _statusCodeController(
-          statusCode: response.statusCode, result: result, response: response);
+          statusCode: response.statusCode,
+          result: result,
+          response: response,
+          model: parseModel);
     } catch (ex, stackTrace) {
       clientIsActive = false;
       Logger logger = Logger(level: Level.error);
@@ -126,6 +131,7 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
     required String endPoint,
     required Map<String, String> fileParams,
     E? body,
+    T? parseModel,
     Map<String, String>? headers,
     Map<int, Function(dynamic)>? statusCodeParams,
     bool? xhr = false,
@@ -141,13 +147,13 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
         if (bearerToken == null) {
           Logger logger = Logger(level: Level.error);
           logger.d('Your session token returned null');
-          return;
+          return null;
         }
       }
       if (ApiServiceManager().getHeader == null) {
         Logger logger = Logger(level: Level.error);
         logger.d('instance error: Please init ApiServiceManager instance');
-        return;
+        return null;
       }
       Map<String, String> standartHeader =
           ApiServiceManager().getHeader!.header;
@@ -215,7 +221,11 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
       final response = await http.Response.fromStream(mExexutaion);
       var result = json.decode(response.body);
       return await _statusCodeController(
-          statusCode: response.statusCode, result: result, response: response);
+        model: parseModel,
+        statusCode: response.statusCode,
+        result: result,
+        response: response,
+      );
     } catch (ex, stackTrace) {
       Logger logger = Logger(level: Level.error);
       logger.e(
@@ -227,8 +237,9 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
     }
   }
 
-  Future<T?> _statusCodeController(
+  Future<dynamic> _statusCodeController(
       {required int statusCode,
+       T? model,
       required dynamic result,
       required http.Response response,
       Map<int, Function(dynamic)>? statusCodeParams}) async {
@@ -248,8 +259,8 @@ class ApiService<E extends RequestModel, T extends ResponseModel> {
           }
         }
         return model != null
-            ? model!.fromJson(json.decode(response.body))
-            : json.decode(response.body);
+            ? model.fromJson(json.decode(response.body))
+            : result;
 
       case 401:
         if (statusCodeParams == null) {

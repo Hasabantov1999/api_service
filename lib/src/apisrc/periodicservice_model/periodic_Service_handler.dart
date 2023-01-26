@@ -61,7 +61,7 @@ class PeriodicServiceHandler {
 
   bool get hasListeners => _statusController.hasListener;
   Timer? _timerHandle;
-  Future<dynamic> get getData async {
+  Future<dynamic> get getData async  {
     final Completer<dynamic> result = Completer<dynamic>();
     ApiService api = ApiService();
     var res = await api.requestApi(
@@ -72,6 +72,7 @@ class PeriodicServiceHandler {
       headers: apiConfigurations[taskId]['headers'],
       body: apiConfigurations[taskId]['body'],
       statusCodeParams: apiConfigurations[taskId]['statusCodeParams'],
+      parseModel: apiConfigurations[taskId]['parseModel']
 
     );
     result.complete(res);
