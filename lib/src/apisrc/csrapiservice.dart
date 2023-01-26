@@ -14,7 +14,7 @@ import 'package:logger/logger.dart';
 class ApiService<E extends RequestModel,T extends ResponseModel> {
   bool clientIsActive = false;
 
-  Future<dynamic> requestApi(
+  Future<T?> requestApi(
       {Map<String, String>? params,
       bool? session = false,
       required String endPoint,
@@ -125,7 +125,7 @@ class ApiService<E extends RequestModel,T extends ResponseModel> {
     }
   }
 
-  Future<dynamic> multiPartRequestApi({
+  Future<T?> multiPartRequestApi({
     Map<String, String>? params,
     bool? session = false,
     required String endPoint,
@@ -237,7 +237,7 @@ class ApiService<E extends RequestModel,T extends ResponseModel> {
     }
   }
 
-  Future<dynamic> _statusCodeController(
+  Future<T?> _statusCodeController(
       {required int statusCode,
        T? model,
       required dynamic result,
