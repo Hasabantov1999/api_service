@@ -10,7 +10,8 @@ environment:
 
 dependencies:
   api_service:
-    path: ../
+    git: 
+      url: https://github.com/Hasabantov1999/api_service.git
   flutter:
     sdk: flutter
 

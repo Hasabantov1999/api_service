@@ -35,12 +35,12 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
     // await ApiServiceManager().initInstance();
     // Example 2
     //You can use specific header for all request
-    // await ApiServiceManager().initInstance(
-    //   defaultHeader: {
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json',
-    //   },
-    // );
+    await ApiServiceManager().initInstance(defaultHeader: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    }, responseStandartStatusCodeCallBacks: {
+      401: (result) {}
+    });
     // Example 3
     //You can use specific status code callbacks
     await ApiServiceManager().initInstance(defaultHeader: {
@@ -85,7 +85,10 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
                 //all file extensions you can send only body field in api so 'photo' body fields part and sending file path
                 var result3 = await api.multiPartRequestApi(
                   endPoint: 'https://reqres.in/api/users',
-                  fileParams: {'file': sendinfFile!.path},
+                  fileParams: {
+                    'file': sendinfFile!.path,
+                    
+                  },
                 );
                 //and you can also use xhr What is the xhr? xhr progress provide to your uploaded  file time
                 //example
