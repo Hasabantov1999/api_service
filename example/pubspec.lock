@@ -4,11 +4,9 @@ packages:
   api_service:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: d49c8c1d07f6731e1fed7e77c4d896cc5f33e93a
-      url: "https://github.com/Hasabantov1999/api_service.git"
-    source: git
+      path: ".."
+      relative: true
+    source: path
     version: "1.0.0+1"
   async:
     dependency: transitive

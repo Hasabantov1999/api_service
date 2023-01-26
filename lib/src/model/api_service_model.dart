@@ -1,6 +1,9 @@
-abstract class ApiServiceModel<T> {
-  T fromJson(Map<String, Object> json);
-   Map<String, Object> toJson();
+abstract class ResponseModel<T> {
+  
+   T fromJson(Map<String, dynamic> json);
+   Map<String, dynamic> toJson();
 }
 
-
+abstract class RequestModel {
+   Map<String, dynamic> toJson();
+}

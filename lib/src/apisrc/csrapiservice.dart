@@ -4,21 +4,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:api_service/src/apisrc/apimanager.dart';
-import 'package:api_service/src/apisrc/logger.dart';
+
 import 'package:api_service/src/model/api_service_model.dart';
 import 'package:api_service/src/model/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class ApiService<T extends ApiServiceModel> with ServiceLogger {
+class ApiService<E extends RequestModel, T extends ResponseModel> {
   bool clientIsActive = false;
-    T? model;
+  T? model;
   Future<T?> requestApi(
       {Map<String, String>? params,
       bool? session = false,
       required String endPoint,
-      T? body,
+      E? body,
       Map<String, String>? headers,
       required ApiServiceRequestModel requestType,
       Map<int, Function(dynamic)>? statusCodeParams}) async {
@@ -36,14 +36,14 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
       String? bearerToken = await ApiServiceManager().getBearerToken;
       if (session!) {
         if (bearerToken == null) {
-          logger = Logger(level: Level.error);
+          Logger logger = Logger(level: Level.error);
           logger.e('Your session token returned null');
           return null;
         }
       }
 
       if (ApiServiceManager().getHeader == null) {
-        logger = Logger(level: Level.error);
+        Logger logger = Logger(level: Level.error);
         logger.e('instance error: Please init ApiServiceManager instance');
         return null;
       }
@@ -100,7 +100,7 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
 
       var result = json.decode(response.body);
 
-      logger = Logger(level: Level.debug);
+      Logger logger = Logger(level: Level.debug);
       logger.d('Header:$standartHeader');
       logger.d('End Point:$url');
       logger.d('StatusCode:${response.statusCode}');
@@ -110,7 +110,7 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
           statusCode: response.statusCode, result: result, response: response);
     } catch (ex, stackTrace) {
       clientIsActive = false;
-      logger = Logger(level: Level.error);
+      Logger logger = Logger(level: Level.error);
       logger.e(
         'You got an error while submitting the request.',
         [ex, stackTrace],
@@ -125,7 +125,7 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
     bool? session = false,
     required String endPoint,
     required Map<String, String> fileParams,
-    T? body,
+    E? body,
     Map<String, String>? headers,
     Map<int, Function(dynamic)>? statusCodeParams,
     bool? xhr = false,
@@ -139,13 +139,13 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
       String? bearerToken = await ApiServiceManager().getBearerToken;
       if (session!) {
         if (bearerToken == null) {
-          logger = Logger(level: Level.error);
+          Logger logger = Logger(level: Level.error);
           logger.d('Your session token returned null');
           return;
         }
       }
       if (ApiServiceManager().getHeader == null) {
-        logger = Logger(level: Level.error);
+        Logger logger = Logger(level: Level.error);
         logger.d('instance error: Please init ApiServiceManager instance');
         return;
       }
@@ -201,10 +201,10 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
             loadedBytes(downloadLength);
           }
         }, onDone: () {
-          logger = Logger(level: Level.info);
+          Logger logger = Logger(level: Level.info);
           logger.d('File uploaded succesfully');
         }, onError: () {
-          logger = Logger(level: Level.error);
+          Logger logger = Logger(level: Level.error);
           logger.d('Error: File cant uploaded');
           logger = Logger(level: Level.debug);
           logger.d('End Point:$url');
@@ -217,7 +217,7 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
       return await _statusCodeController(
           statusCode: response.statusCode, result: result, response: response);
     } catch (ex, stackTrace) {
-      logger = Logger(level: Level.error);
+      Logger logger = Logger(level: Level.error);
       logger.e(
         'You got an error while submitting the request.',
         [ex, stackTrace],
@@ -247,7 +247,9 @@ class ApiService<T extends ApiServiceModel> with ServiceLogger {
             }
           }
         }
-        return model!=null ? model!.fromJson(json.decode(response.body)): json.decode(response.body) ;
+        return model != null
+            ? model!.fromJson(json.decode(response.body))
+            : json.decode(response.body);
 
       case 401:
         if (statusCodeParams == null) {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:example/model/api_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:api_service/api_service.dart';
 
@@ -65,7 +66,7 @@ class _ApiServiceManagerInstanceState extends State<ApiServiceManagerInstance> {
           children: [
             TextButton(
               onPressed: () async {
-                ApiService api = ApiService();
+                ApiService<EmptyRequest,Hyt> api = ApiService();
                 var result = await api.requestApi(
                   endPoint: 'https://reqres.in/api/users',
                   requestType: ApiServiceRequestModel.Get,
