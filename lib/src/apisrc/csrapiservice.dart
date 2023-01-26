@@ -1,23 +1,24 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_interpolation_to_compose_strings, body_might_complete_normally_nullable
 
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:api_service/src/apisrc/apimanager.dart';
 import 'package:api_service/src/apisrc/logger.dart';
+import 'package:api_service/src/model/api_service_model.dart';
 import 'package:api_service/src/model/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class ApiService with ServiceLogger {
+class ApiService<T extends ApiServiceModel> with ServiceLogger {
   bool clientIsActive = false;
-  Future<dynamic> requestApi(
+  late final T model;
+  Future<T?> requestApi(
       {Map<String, String>? params,
       bool? session = false,
       required String endPoint,
-      Object? body,
-      bool? jsonBody = false,
+      T? body,
       Map<String, String>? headers,
       required ApiServiceRequestModel requestType,
       Map<int, Function(dynamic)>? statusCodeParams}) async {
@@ -37,14 +38,14 @@ class ApiService with ServiceLogger {
         if (bearerToken == null) {
           logger = Logger(level: Level.error);
           logger.e('Your session token returned null');
-          return;
+          return null;
         }
       }
 
       if (ApiServiceManager().getHeader == null) {
         logger = Logger(level: Level.error);
         logger.e('instance error: Please init ApiServiceManager instance');
-        return;
+        return null;
       }
 
       Map<String, String> standartHeader =
@@ -73,19 +74,24 @@ class ApiService with ServiceLogger {
           response = await client.get(url, headers: standartHeader);
           break;
         case ApiServiceRequestModel.Post:
-          response =
-              await client.post(url, body: body, headers: standartHeader);
+          response = await client.post(url,
+              body: body != null ? json.encode(body.toJson()) : null,
+              headers: standartHeader);
           break;
         case ApiServiceRequestModel.Delete:
-          response =
-              await client.delete(url, body: body, headers: standartHeader);
+          response = await client.delete(url,
+              body: body != null ? json.encode(body.toJson()) : null,
+              headers: standartHeader);
           break;
         case ApiServiceRequestModel.Put:
-          response = await client.put(url, body: body, headers: standartHeader);
+          response = await client.put(url,
+              body: body != null ? json.encode(body.toJson()) : null,
+              headers: standartHeader);
           break;
         case ApiServiceRequestModel.Patch:
-          response =
-              await client.patch(url, body: body, headers: standartHeader);
+          response = await client.patch(url,
+              body: body != null ? json.encode(body.toJson()) : null,
+              headers: standartHeader);
           break;
         default:
           response = await client.get(url, headers: standartHeader);
@@ -101,10 +107,7 @@ class ApiService with ServiceLogger {
       logger.d('Request Type:$requestType');
 
       return await _statusCodeController(
-          statusCode: response.statusCode,
-          result: result,
-          jsonBody: jsonBody!,
-          response: response);
+          statusCode: response.statusCode, result: result, response: response);
     } catch (ex, stackTrace) {
       clientIsActive = false;
       logger = Logger(level: Level.error);
@@ -122,8 +125,7 @@ class ApiService with ServiceLogger {
     bool? session = false,
     required String endPoint,
     required Map<String, String> fileParams,
-    Object? body,
-    bool? jsonBody = false,
+    T? body,
     Map<String, String>? headers,
     Map<int, Function(dynamic)>? statusCodeParams,
     bool? xhr = false,
@@ -176,6 +178,11 @@ class ApiService with ServiceLogger {
         );
       });
       request.headers.addAll(standartHeader);
+      if (body != null) {
+        body.toJson().forEach((key, value) {
+          request.fields[key] = value.toString();
+        });
+      }
       http.StreamedResponse mExexutaion = await request.send();
 
       if (xhr!) {
@@ -208,10 +215,7 @@ class ApiService with ServiceLogger {
       final response = await http.Response.fromStream(mExexutaion);
       var result = json.decode(response.body);
       return await _statusCodeController(
-          statusCode: response.statusCode,
-          result: result,
-          jsonBody: jsonBody!,
-          response: response);
+          statusCode: response.statusCode, result: result, response: response);
     } catch (ex, stackTrace) {
       logger = Logger(level: Level.error);
       logger.e(
@@ -223,15 +227,14 @@ class ApiService with ServiceLogger {
     }
   }
 
-  Future<dynamic> _statusCodeController(
+  Future<T?> _statusCodeController(
       {required int statusCode,
       required dynamic result,
-      required bool jsonBody,
       required http.Response response,
       Map<int, Function(dynamic)>? statusCodeParams}) async {
     switch (response.statusCode) {
       case 200:
-      if (statusCodeParams == null) {
+        if (statusCodeParams == null) {
           if (ApiServiceManager().getStatusCodeCallBacks.containsKey(200)) {
             ApiServiceManager().getStatusCodeCallBacks[200]!(result);
           }
@@ -244,8 +247,8 @@ class ApiService with ServiceLogger {
             }
           }
         }
-        return jsonBody ? result : response.body;
-        
+        return model.fromJson(json.decode(response.body));
+
       case 401:
         if (statusCodeParams == null) {
           if (ApiServiceManager().getStatusCodeCallBacks.containsKey(401)) {
@@ -264,7 +267,8 @@ class ApiService with ServiceLogger {
       case 404:
         if (statusCodeParams == null) {
           if (ApiServiceManager().getStatusCodeCallBacks.containsKey(404)) {
-            ApiServiceManager().getStatusCodeCallBacks[404]!(response.body)(result);
+            ApiServiceManager().getStatusCodeCallBacks[404]!(response.body)(
+                result);
           }
         } else {
           if (statusCodeParams.containsKey(404)) {

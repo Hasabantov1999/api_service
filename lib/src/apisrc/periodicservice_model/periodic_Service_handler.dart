@@ -72,7 +72,7 @@ class PeriodicServiceHandler {
       headers: apiConfigurations[taskId]['headers'],
       body: apiConfigurations[taskId]['body'],
       statusCodeParams: apiConfigurations[taskId]['statusCodeParams'],
-      jsonBody: apiConfigurations[taskId]['jsonBody'],
+
     );
     result.complete(res);
     return result.future;
