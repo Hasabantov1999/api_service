@@ -1,8 +1,7 @@
 name: api_service
 version: 1.0.0+1
 description: 'Api service provides you convenience while exchanging all requests.'
-homepage: https://
-repository: https://
+repository: https://https://github.com/Hasabantov1999/api_service
 publish_to: "none"
 
 
