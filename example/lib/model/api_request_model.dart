@@ -1,16 +1,14 @@
 import 'package:api_service/api_service.dart';
 
-class Hyt extends ResponseModel<Hyt> {
-  @override
-  Hyt fromJson(Map<String, dynamic> json) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
-  }
+class ExampleRequestModel extends RequestModel {
+  ExampleRequestModel({
+    this.phone,
+  });
+
+  String? phone;
 
   @override
-  Map<String, dynamic> toJson() {
-    // TODO: implement toJson
-    throw UnimplementedError();
-  }
-
+  Map<String, dynamic> toJson() => {
+        "phone": phone,
+      };
 }

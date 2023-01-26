@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:example/model/api_request_model.dart';
+import 'package:example/model/api_response_model.dart';
 import 'package:flutter/material.dart';
 import 'package:api_service/api_service.dart';
 
